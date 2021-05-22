@@ -1,0 +1,12 @@
+{
+  "kinesisStreamName": "amplifylovedogsKinesis",
+  "kinesisStreamShardCount": 1,
+  "authRoleName": {
+    "Ref": "AuthRoleName"
+  },
+  "unauthRoleName": {
+    "Ref": "UnauthRoleName"
+  },
+  "authPolicyName": "kinesis_amplify_6d8d87d0",
+  "unauthPolicyName": "kinesis_amplify_6d8d87d0"
+}

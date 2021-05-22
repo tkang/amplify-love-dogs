@@ -8,6 +8,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/outline";
+import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
+import { Auth } from "aws-amplify";
+import { Analytics } from "aws-amplify";
 
 async function fetchBreeds() {
   return [...Object.keys(BREEDS)];
@@ -28,55 +31,42 @@ export async function getStaticProps(context) {
   };
 }
 
-function DogCard({ breed, imageUrl, onNext, onPrev, onLike }) {
-  console.log("breed = ", breed);
-  console.log("imageUrl = ", imageUrl);
-
+function DogCard({ imageUrl, onNext, onPrev, onLike }) {
   return (
-    <ul
-      role="list"
-      className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-8"
-    >
-      <li></li>
-      <li key={imageUrl} className="relative">
-        <div className="block w-full overflow-hidden bg-gray-100 rounded-lg group aspect-w-10 aspect-h-7 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-indigo-500">
-          <img
-            src={imageUrl}
-            alt=""
-            className="object-cover pointer-events-none group-hover:opacity-75"
-          />
-          <button type="button" className="absolute inset-0 focus:outline-none">
-            <span className="sr-only">View details</span>
+    <>
+      <div className="max-w-screen-lg mx-auto h-80">
+        <img
+          src={imageUrl}
+          alt=""
+          className="object-cover h-full mx-auto pointer-events-none group-hover:opacity-75"
+        />
+      </div>
+      <div className="mt-2">
+        <span className="relative z-0 inline-flex rounded-md shadow-sm">
+          <button
+            onClick={onPrev}
+            type="button"
+            className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
           </button>
-        </div>
-        <div className="mt-2">
-          <span className="relative z-0 inline-flex rounded-md shadow-sm">
-            <button
-              onClick={onPrev}
-              type="button"
-              className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
-            </button>
-            <button
-              onClick={onLike}
-              type="button"
-              className="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <HeartIcon className="w-5 h-5" aria-hidden="true" />
-            </button>
-            <button
-              onClick={onNext}
-              type="button"
-              className="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
-            </button>
-          </span>
-        </div>
-      </li>
-      <li></li>
-    </ul>
+          <button
+            onClick={onLike}
+            type="button"
+            className="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <HeartIcon className="w-5 h-5" aria-hidden="true" />
+          </button>
+          <button
+            onClick={onNext}
+            type="button"
+            className="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
+          </button>
+        </span>
+      </div>
+    </>
   );
 }
 
@@ -85,24 +75,60 @@ function Home({ initialBreeds, initialBreedsUrls }) {
   const [breedsUrls, setBreedsUrls] = useState(initialBreedsUrls);
   const [randomBreed, setRandomBreed] = useState();
   const [randomBreedUrl, setRandomBreedUrl] = useState();
+  const [currentUser, setCurrentUser] = useState();
 
   useEffect(() => {
     console.log("breeds = ", breeds);
+    checkUser();
   }, []);
+
+  async function checkUser() {
+    const user = await Auth.currentAuthenticatedUser();
+    console.log("user: ", user);
+    console.log("user attributes: ", user.attributes);
+    setCurrentUser(user);
+  }
 
   useEffect(() => {
     setRandomBreed(_.sample(breeds));
   }, [breeds]);
 
   useEffect(() => {
+    console.log("breed = ", randomBreed);
     const urls = breedsUrls[randomBreed];
-    const url = _.sample(urls);
-    setRandomBreedUrl(url);
+    setRandomBreedUrl(_.sample(urls));
   }, [randomBreed]);
 
   const handleLike = () => {
-    console.log("liked ", randomBreed);
+    recordUserActivity("like");
     setRandomBreed(_.sample(breeds));
+  };
+
+  const handlePrev = () => {
+    recordUserActivity("prev");
+    setRandomBreed(_.sample(breeds));
+  };
+
+  const handleNext = () => {
+    recordUserActivity("next");
+    setRandomBreed(_.sample(breeds));
+  };
+
+  const recordUserActivity = (action) => {
+    const userActivity = {
+      username: currentUser.username,
+      action,
+      breed: randomBreed,
+    };
+    console.log(userActivity);
+    debugger;
+    Analytics.record(
+      {
+        data: { userActivity },
+        streamName: "amplifylovedogsKinesis-dev",
+      },
+      "AWSKinesis"
+    );
   };
 
   return (
@@ -130,12 +156,15 @@ function Home({ initialBreeds, initialBreedsUrls }) {
                   <DogCard
                     breed={randomBreed}
                     imageUrl={randomBreedUrl}
-                    onLike={() => handleLike()}
-                    onPrev={() => setRandomBreed(_.sample(breeds))}
-                    onNext={() => setRandomBreed(_.sample(breeds))}
+                    onLike={handleLike}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
                   />
                 )}
               </div>
+            </div>
+            <div className="mt-6">
+              <AmplifySignOut />
             </div>
           </div>
         </main>
@@ -146,4 +175,4 @@ function Home({ initialBreeds, initialBreedsUrls }) {
   );
 }
 
-export default Home;
+export default withAuthenticator(Home);

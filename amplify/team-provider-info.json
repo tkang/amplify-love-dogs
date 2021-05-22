@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplifylovedogs-dev-153653-authRole",
+      "UnauthRoleArn": "arn:aws:iam::542652840554:role/amplify-amplifylovedogs-dev-153653-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::542652840554:role/amplify-amplifylovedogs-dev-153653-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-amplifylovedogs-dev-153653-deployment",
+      "UnauthRoleName": "amplify-amplifylovedogs-dev-153653-unauthRole",
+      "StackName": "amplify-amplifylovedogs-dev-153653",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:542652840554:stack/amplify-amplifylovedogs-dev-153653/1c1277d0-bac8-11eb-9e4a-06157ac1c2de",
+      "AmplifyAppId": "d8zguqj4iobwm"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d8zguqj4iobwm",
+          "type": "manual"
+        }
+      },
+      "auth": {
+        "amplifylovedogs224222e5": {}
+      }
+    }
+  }
+}
