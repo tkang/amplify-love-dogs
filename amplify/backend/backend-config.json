@@ -7,7 +7,7 @@
     }
   },
   "auth": {
-    "amplifylovedogs224222e5": {
+    "amplifylovedogsaf3f728a": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],

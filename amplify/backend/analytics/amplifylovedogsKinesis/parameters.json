@@ -7,6 +7,6 @@
   "unauthRoleName": {
     "Ref": "UnauthRoleName"
   },
-  "authPolicyName": "kinesis_amplify_6d8d87d0",
-  "unauthPolicyName": "kinesis_amplify_6d8d87d0"
+  "authPolicyName": "kinesis_amplify_cf41ffe6",
+  "unauthPolicyName": "kinesis_amplify_cf41ffe6"
 }

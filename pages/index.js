@@ -41,7 +41,7 @@ function DogCard({ imageUrl, onNext, onPrev, onLike }) {
           className="object-cover h-full mx-auto pointer-events-none group-hover:opacity-75"
         />
       </div>
-      <div className="mt-2">
+      <div className="mt-4">
         <span className="relative z-0 inline-flex rounded-md shadow-sm">
           <button
             onClick={onPrev}
@@ -121,7 +121,6 @@ function Home({ initialBreeds, initialBreedsUrls }) {
       breed: randomBreed,
     };
     console.log(userActivity);
-    debugger;
     Analytics.record(
       {
         data: { userActivity },

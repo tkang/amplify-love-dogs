@@ -4,13 +4,14 @@
 
 ![AmplifyLoveDogs](Amplify_Love_Dogs.png)
 
-This hands-on lab will build a full-stack serverless application on AWS using Amplify, Next.js.
+본 워크샾에서는, [Amplify](https://docs.amplify.aws/), [Next.js](https://nextjs.org/), [GraphQL](https://graphql.org/) 을 이용하여 AWS 위에 full-stack serverless application 을 만들어 보려합니다
 
-This application will be similar to like-it-or-not for dogs.
-It will show pictures of dogs and users will either like it or pass it.
-Those events will then be sent to AWS Kinesis DataStream.
+like-it-or-not 과 같은 어플리케이션을 만들어보려 합니다.
+강아지들의 사진이 나오고, 사용자는 좋아요 혹은 넘어가기를 선택할수 있습니다.
+그리고 사용자의 액션은 AWS Kinesis DataStream 으로 보내지게 됩니다.
 
-Data ingested into Kinesis DataStream can further be processed for various data related works (e.g. analytics, AI/ML)
+Kinesis DataStream 으로 들어온 데이터는 추후에 Anlaytics 나 AI/ML (예 : 추천) 을 위한 작업에 사용될수 있습니다.
+
 Think of this application as a gateway for data analytics on AWS.
 
 Once users follow this guide, they will have a working application running on AWS.
@@ -29,9 +30,9 @@ This hands-on lab is expected to be done in 1 to 2 hours
 
 ### Required Background / Level
 
-This guide has been made for front-end and back-end developers who want to learn more about building a data-driven full-stack serverless application on AWS.
+본 워크샾은 data-driven full stack serverless 어플리케이션에 대해 알고 싶은 front-end 와 back-end 개발자들을 위해 만들어졌습니다.
 
-Having knowledge in React is helpful, but not necessary.
+React 에대한 지식이 있다면 도움이 되지만, 필수는 아닙니다.
 
 ### Topics we will cover
 
@@ -50,15 +51,13 @@ Having knowledge in React is helpful, but not necessary.
 
 ### Development Environment
 
-Before we start, please install
+시작하기전에, 아래 패키지들을 설치해주세요.
 
 - Node.js v10.x or later
 - npm v5.x or later
 - git v2.14.1 or later
 
-On a terminal, we will run Amplify CLI to create a infrastructure, start
-Next.js application on a local machine, and test application on a
-browser.
+터미널에서 [Bash shell](<https://en.wikipedia.org/wiki/Bash_(Unix_shell)>) 상에서 Amplify CLI 를 실행해서 infra를 생성하고, Next.js application 을 로컬에서 띄우고 브라우져 상에서 테스트 하려 합니다.
 
 ### AWS Account
 
@@ -67,13 +66,13 @@ If you don't have an AWS account and would like to create and activate an AWS ac
 
 ### Create a Next.js application
 
-Let's create a new project using [Create Next App](https://nextjs.org/docs/api-reference/create-next-app)
+[Create Next App](https://nextjs.org/docs/api-reference/create-next-app) 을 이용하여 새로운 프로젝트를 생성해봅시다.
 
 ```sh
 $ npx create-next-app amplify-love-dogs
 ```
 
-move into the `amplify-love-dogs` directory and install required packages.
+생성된 디렉토리로 이동해서, aws-amplify 연관 패키지들을 설치해봅시다.
 
 ```sh
 $ cd amplify-love-dogs
@@ -82,23 +81,21 @@ $ yarn add aws-amplify @aws-amplify/ui-react lodash
 
 ### Styling with TailwindCSS
 
-We will use TailwindCSS to style application.
+본 앱에서는 TailwindCSS 를 이용하여 스타일링을 해보려 합니다.
 
-Let's install TailwindCSS related packages in devDependencies.
+Tailwind CSS 관련 패키지를 설치합시다. devDependencies 에만 들어가도록 설치합니다.
 
 ```sh
 $ yarn add --dev tailwindcss@latest postcss@latest autoprefixer@latest @tailwindcss/forms
 ```
 
-To create Tailwind config files (`tailwind.config.js` `postcss.config.js`), let's run the following.
+Tailwind 관련 설정 파일들 (`tailwind.config.js` `postcss.config.js`) 생성을 위해 다음 명령어를 실행합니다.
 
 ```sh
 $ npx tailwindcss init -p
 ```
 
-Now, let's update `tailwind.config.js` as following.
-
-> This is to do tree-shake unused styling in production build
+`tailwind.config.js` 의 내용을 다음과 같이 변경합니다. (production builds 에서 사용되지 않는 스타일링을 tree-shake 하기 위해서입니다.)
 
 ```diff
 // tailwind.config.js
@@ -117,7 +114,7 @@ module.exports = {
 }
 ```
 
-To use Tailwind's base, component, and utilities style, Let's update `./styles/globals.css`
+Tailwind 의 base, component, utilties 스타일이 사용되도록 next.js 에서 생성된 `./styles/globals.css` 파일을 다음과 같이 변경합니다.
 
 ```
 /* ./styles/globals.css */
@@ -126,11 +123,11 @@ To use Tailwind's base, component, and utilities style, Let's update `./styles/g
 @tailwind utilities;
 ```
 
-> If you would like to know more about installing TailwindCSS, plesae check [here](https://tailwindcss.com/docs/guides/nextjs)
+> TailwindCSS 설치에 대한 자세한 내용은, 다음 링크를 확인하세요. [here](https://tailwindcss.com/docs/guides/nextjs)
 
 ### / root page
 
-Let's update **pages/index.js**, which renders / root page.
+기본으로 생성된 **pages/index.js** 를 변경합니다.
 
 ```js
 /* pages/index.js */
@@ -170,8 +167,7 @@ function Home() {
 export default Home;
 ```
 
-Let's run `yarn dev` to start a local server, and check if the page
-loads with no issues on a browser at localhost:3000
+문제없이 로딩이 되는지, `yarn dev` 명령어로 로컬에서 서버를 띄우고, 브라우져에서 확인해봅니다.
 
 ```sh
 $ yarn dev
@@ -179,10 +175,8 @@ $ yarn dev
 
 ### Intializing a git repostory
 
-Let's create a git repository for this project at (https://github.com/new)
-
-Once you create a repository, let's initialize a git in your folder, and
-add the created repository url.
+본 프로젝트를 위한 git repository를 하나 만들어주세요. (https://github.com/new)
+repository 생성을 하였으면, 로컬에서 git 을 초기화 하고, 생성된 repository 의 url 을 추가해주세요.
 
 ```sh
 $ git init
@@ -196,17 +190,15 @@ $ git push origin main
 
 ### Install Amplify CLI
 
-Let's install Amplify CLI
+Amplify CLI 를 설치해봅시다.
 
 ```sh
 $ npm install -g @aws-amplify/cli
 ```
 
-Now, let's configure CLI to use your AWS credential.
+다음은 CLI 에서 AWS credential 을 사용하도록 설정해봅시다.
 
-> If you would like to know more about the steps to create a credential,
-> please check this video
-> [here](https://www.youtube.com/watch?v=fWbM5DLh25U)
+> 이 과정에 대한 자세한 설명을 보고 싶으면, 비디오를 확인하세요. [here](https://www.youtube.com/watch?v=fWbM5DLh25U)
 
 ```sh
 $ amplify configure
@@ -222,7 +214,7 @@ $ amplify configure
 
 ### Initialzing Amplify Project
 
-Let's initialze your Amplify project.
+amplify 프로젝트를 초기화 해봅시다.
 
 ```sh
 $ amplify init
@@ -240,30 +232,21 @@ $ amplify init
 - Please choose the profile you want to use: amplify-cli-user
 ```
 
-> **You must change Distribution Directory Path to `out`.**
-> After you build and export your Next.js, build artifacts will be
-> placed in `out` directory
+> **Distribution Directory Path 는 꼭 `out` 으로 변경해주세요.** (next.js 에서 build 후 export 를 하면 out 디렉토리로 결과물이 들어갑니다.)
 
-> Once `amplify init` is done, **amplify** folder will be created and `aws-exports.js` file will be created in **src** folder.
+> `amplify init` 초기화가 끝나면, **amplify** 폴더가 생성되고 **src** 폴더아래 `aws-exports.js` 파일이 생성됩니다.
 
-> **src/aws-exports.js** is where you will find Amplify config infos.
+> **src/aws-exports.js** 는 amplify 의 설정값들이 들어있습니다.
 
-> **amplify/team-provider-info.json** contains variables for Amplify project's
-> back-end environment.
-> If you plan to share the same back-end environment, you should share
-> this file. If not (e.g. opening this project to a public), you should
-> not share this file (e.g. adding this file in `.gitignore`)
+> **amplify/team-provider-info.json** 파일에는 amplify 프로젝트의 back-end 환경(env) 관련 변수들이 들어가 있습니다. 다른 사람들과 동일한 백엔드 환경을 공유하고 싶다면, 이 파일을 공유하면 됩니다. 만약에 프로젝트를 공개하고 싶은 경우라면 이 파일은 빼주는게 좋습니다. (.gitignore 에 추가) [관련문서](https://docs.amplify.aws/cli/teams/shared)
 
-> For more info, please check (https://docs.amplify.aws/cli/teams/shared)
-
-You can check Amplify project's status with `amplify status` command.
+amplify 프로젝트의 상태를 보고 싶다면 `amplify status` 명령어로 확인하실수 있습니다.
 
 ```sh
 $ amplify status
 ```
 
-If you want to check with Amplify console,`amplify console`
-should launch a console in your browser.
+amplify 프로젝트 상태를 Amplify console 로 확인하고 싶다면, `amplify console` 명령어로 확인할수 있습니다.
 
 ```sh
 $ amplify console
@@ -271,11 +254,11 @@ $ amplify console
 
 ### Configuring the Next applicaion with Amplify
 
-Once we have Amplify project ready, we now need to make our Next.js app
-to be aware of Amplify project.
-We can do this by making the top level component to configure Amplify with `src/aws-exports.js` file
+Amplify 프로젝트가 생성되고 준비되었으니, app 을 통해 테스트 해봅시다.
 
-Let's open **pages/\_app.js** and add the following.
+우선 해야할일은, 우리가 만들고 있는 app 에서 Amplify project 에 대해 인식하도록 설정하는 것입니다. src 폴더 안에 자동생성된 `aws-exports.js` 파일을 참조하도록 추가해봅시다.
+
+설정을 하기위해 **pages/\_app.js** 파일을 열고, 다음 코드를 추가합니다.
 
 ```diff
   import '../styles/globals.css'
@@ -290,13 +273,13 @@ Let's open **pages/\_app.js** and add the following.
   export default MyApp
 ```
 
-Once it's done, our Next.app is ready to use AWS managed by Amplify.
+위 코드가 추가되면, app 에서 Amplify 를 통해 셋업된 AWS service 를 이용할 준비가 됩니다.
 
 ## Hosting
 
-Amplify Console takes care of application hosting as well as CI and deployment.
+Amplify Console 은 배포와 CI 를 위한 hosting 서비스 입니다.
 
-First, let's update **package.json** as follows.
+우선 build 스크립트 변경을 위해 **package.json** 안의 내용중 `scripts` 부분을 다음과 같이 변경해주세요.
 
 ```diff
 "scripts": {
@@ -307,14 +290,11 @@ First, let's update **package.json** as follows.
 },
 ```
 
-> `next export` generates static HTML from the Next.js app so the
-> application can be served as a static file without the need of a Node
-> server.
+> `next export` 는 next.js app 을 static HTML 파일로 변환해줍니다. 따라서 Node 서버가 필요 없이 app 을 로딩할수 있습니다.
 
-> As of 2021-04, Amplify hosting can only serve static files. However,
-> server-side rending will soon be supported.
+> Amplify hosting 에서는 2021년 4월 현재 static file 만 서빙 가능합니다. 하지만 곧 server-side rendering 을 지원할 예정입니다.
 
-To add hosting, let's run `amplify add hosting`
+Hosting 을 추가하기 위해, 다음 명령어를 실행합니다.
 
 ```sh
 $ amplify add hosting
@@ -323,26 +303,25 @@ $ amplify add hosting
 ? Choose a type: Manual deployment
 ```
 
-To apply the change we just made, let's run `amplify push`
+`amplify push` 명령어로 변경사항 (`add hosting`) 을 적용해봅니다.
 
 ```sh
 $ amplify push
 ```
 
-To publish/deploy our application, run `amplify publish`
+`amplify publish` 명령어로 hosting 으로 배포를 해봅니다.
 
 ```sh
 $ amplify publish
 ```
 
-Once deployment is finished, a url will be printed. Go to the url in
-your browser, and make sure your application loads correctly.
+배포가 완료되면, 브라우져에서 터미널에 출력된 url 로 들어가보셔서 next.js 앱이 정상적으로 로딩되는 것을 확인해주세요.
 
 ## Adding Authentication
 
-Let's now add authentication.
+다음과정은, authentication을 추가를 해보겠습니다.
 
-To add authentication feature, run `amplify add auth`
+authentication 추가를 위해, `ampfliy add auth` 명령어를 실행합니다.
 
 ```sh
 $ amplify add auth
@@ -352,7 +331,7 @@ $ amplify add auth
 ? Do you want to configure advanced settings? No, I am done.
 ```
 
-To apply the change, run `amplify push`
+변경사항 적용을 위해 `amplify push` 명령어를 실행합니다.
 
 ```sh
 $ amplify push
@@ -362,15 +341,11 @@ $ amplify push
 
 ### withAuthenticator
 
-Using `withAuthencator` HOC provided by amplify-ui, we can make sure
-pages are protected by authentication.
+인증/로그인된 사용자들만 접근할수 있는 페이지에 `withAuthenticator` HOC (Higher Order Component) 를 적용하면 됩니다.
 
-Once applied, users must log in to access the page. If not, they will be
-redirected to a login page.
+예를들어, **/pages/index.js** 페이지에 withAuthenticator 를 적용하면, 사용자는 반드시 로그인을 해야합니다. 로그인이 되어있지 않다면, 로그인 페이지로 이동하게 됩니다.
 
-This UX flow is all taken care of by `withAuthenticator`
-
-To test, let's update **/pages/index.js**
+테스트를 위해 **/pages/index.js** 를 변경해봅시다.
 
 ```diff
 /* pages/index.js */
@@ -381,23 +356,23 @@ import Head from "next/head";
 + export default withAuthenticator(Home);
 ```
 
-> Authenticator UI Component document [here](https://docs.amplify.aws/ui/auth/authenticator/q/framework/react)
+> Authenticator UI Component 관련 문서 [here](https://docs.amplify.aws/ui/auth/authenticator/q/framework/react)
 
-Let's start a dev server and test in the browser.
+코드를 변경했으면 브라우져에서 테스트 해봅시다.
 
 ```sh
 yarn dev
 ```
 
-If you try to load a root / page, you will be redirected to a login.
+로그인 프롬프트가 뜨는 것으로, Authentication 플로우가 app 에 추가된것을 확인할 수 있습니다.
 
-Let's create a new account with sign-up.
+일단, sign up 계정생성을 해봅시다.
 
-Once signed up, you will receive a confirmation code in your email.
+계정 생성을 하면 입력한 이메일로 confirmation code 가 전송됩니다.
 
-Entering the confirmation code will complete the new user sign up.
+이메일로 받은 confirmation code 를 입력해서 계정 생성을 마무리 합니다.
 
-You can check newly created users in Auth console
+auth console 로 들어가면 생성된 사용자를 확인할수 있습니다.
 
 ```sh
 $ amplify console auth
@@ -407,10 +382,9 @@ $ amplify console auth
 
 ### Signout
 
-Let's add signout by using Signout UI component.
+Signout 기능을 Signout UI Compnonent 를 이용해 추가해봅시다.
 
-Add `AmplifySignout` compoent somewhere in your page component. (e.g.
-pages/index.js)
+`AmplifySignout` compoent 를 페이지 어딘가에 넣어주세요.
 
 ```js
 import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
@@ -419,16 +393,15 @@ import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 <AmplifySignOut />;
 ```
 
-> Sign Out UI Component doc [here](https://docs.amplify.aws/ui/auth/sign-out/q/framework/react)
+> Sign Out UI Component 문서 [here](https://docs.amplify.aws/ui/auth/sign-out/q/framework/react)
 
-Let's click on signout button, and make sure you can logout
-successfully.
+SignOut 버튼을 눌러서 로그아웃이 잘 되는지도 확인해보세요.
 
 ### Accessing User Data
 
-When logged in, you can access authenticated user's information with `Auth.currentAuthenticatedUser()`
+로그인 상태에서 `Auth.currentAuthenticatedUser()` 로 사용자 정보를 가져올수 있습니다.
 
-Let's update **pages/index.js** to print user information in console.
+사용자 정보 확인을 위해 **pages/index.js** 파일을 변경해봅시다.
 
 ```diff
 + import { useEffect } from "react";
@@ -452,12 +425,11 @@ function Home() {
 
 ```
 
-Once you load the page with browser console opened, you will see the
-authenticated user's information and attributes in the console.
+브라우져 콘솔을 열고 / 페이지를 로딩하면, 콘솔에 로그인된 사용자 정보들과 attributes 들이 출력되는걸 확인할수 있습니다.
 
 ## Prepare data to show in UI
 
-We need to fetch data. We will create files that contain (1) breed names (2) images for breeds
+UI 에 보여질 데이터가 저장될 파일들을 생성해봅시다. (1) 강아지들 목록 (2) 강아지들 사진들.
 
 ### Breed list
 
@@ -597,17 +569,17 @@ export default BREEDS;
 
 ### Images for breeds
 
-Download [this file](breed-image-url.json) as **breed-image-url.json**
+[this file](breed-image-url.json) 파일을 다운로드해서 **breed-image-url.json** 로 저장해주세요.
 
 ## Implementing UI
 
-Let's install additional packages for UI in devDependencies.
+UI 구현에 필요한 패키지를 설치합니다. devDependencies 로 들어가도록 설치합니다.
 
 ```sh
 $ yarn add --dev @headlessui/react @heroicons/react
 ```
 
-Let's update **pages/index.js** as follows.
+**pages/index.js** 를 다음과 같이 변경합니다.
 
 ```javascript
 import Head from "next/head";
